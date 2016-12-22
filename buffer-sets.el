@@ -52,6 +52,11 @@
   "The file to store buffer set definitions in."
   :type 'file :group 'editing)
 
+;;;###autoload
+(defcustom buffer-set-load-on-start (list)
+  "A list of buffer-sets to load on Emacs start."
+  :type '(repeat symbol) :group 'editing)
+
 
 ;;; Utility Functions
 
@@ -299,6 +304,15 @@
       (buffer-sets-save-definitions)
       (remove-hook 'kill-emacs-hook #'buffer-sets-unload-all-buffer-sets)
       (remove-hook 'kill-emacs-hook #'buffer-sets-save-definitions))))
+
+;;;###autoload
+(defun buffer-sets-install-emacs-start-hook ()
+  "Install the hook to load buffer-sets on Emacs start."
+  (add-hook 'after-init-hook #'buffer-sets-after-init))
+
+(defun buffer-sets-after-init ()
+  "Load buffer-sets on Emacs start."
+  (mapcar #'load-buffer-set buffer-sets-load-on-start))
 
 (provide 'buffer-sets)
 
