@@ -53,7 +53,7 @@
   :type 'file :group 'editing)
 
 ;;;###autoload
-(defcustom buffer-set-load-on-start (list)
+(defcustom buffer-sets-load-on-start (list)
   "A list of buffer-sets to load on Emacs start."
   :type '(repeat symbol) :group 'editing)
 
