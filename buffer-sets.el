@@ -57,6 +57,11 @@
   "A list of buffer-sets to load on Emacs start."
   :type '(repeat symbol) :group 'editing)
 
+;;;###autoload
+(defcustom buffer-sets-ignore-save (list)
+  "A list of buffer-sets to ignore on saving."
+  :type '(repeat symbol) :group 'editing)
+
 
 ;;; Utility Functions
 
@@ -242,16 +247,17 @@
 
 (defun buffer-sets-save (the-set)
   "Save defined buffer sets."
-  (insert (format "%S\n\n" (let ((name (buffer-set-name the-set))
-                                 (files (buffer-set-files the-set))
-                                 (select (buffer-set-select the-set))
-                                 (on-apply (buffer-set-on-apply-source the-set))
-                                 (on-remove (buffer-set-on-remove-source the-set)))
-                             `(define-buffer-set ,name
-                                :files ,files
-                                :select ,select
-                                :on-apply ,on-apply
-                                :on-remove ,on-remove)))))
+  (if (not (member the-set buffer-sets-ignore-save))
+      (insert (format "%S\n\n" (let ((name (buffer-set-name the-set))
+                                     (files (buffer-set-files the-set))
+                                     (select (buffer-set-select the-set))
+                                     (on-apply (buffer-set-on-apply-source the-set))
+                                     (on-remove (buffer-set-on-remove-source the-set)))
+                                 `(define-buffer-set ,name
+                                    :files ,files
+                                    :select ,select
+                                    :on-apply ,on-apply
+                                    :on-remove ,on-remove))))))
 
 ;;;###autoload
 (defun buffer-sets-load-definitions-file ()
