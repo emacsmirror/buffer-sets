@@ -312,6 +312,13 @@
       (remove-hook 'kill-emacs-hook #'buffer-sets-save-definitions))))
 
 ;;;###autoload
+(define-ibuffer-filter in-buffer-set
+    "Check to see if a buffer is in a given buffer-set."
+  (:reader (intern (completing-read "Set Name: " *buffer-sets-applied*)))
+  (let ((buffers-list (symbol-value (buffer-set--generate-buffers-list qualifier))))
+    (member buf buffers-list)))
+
+;;;###autoload
 (defun buffer-sets-install-emacs-start-hook ()
   "Install the hook to load buffer-sets on Emacs start."
   (add-hook 'after-init-hook #'buffer-sets-after-init))
