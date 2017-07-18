@@ -49,17 +49,6 @@
   "The name of the buffer-set to use."
   :type 'symbol :group 'editing)
 
-(defun term-sets-find-buffer-set-load-files ()
-  "Find the files for the current term."
-  (let ((directory (format "%s/%s/%s/"
-                           term-sets-base-directory
-                           term-sets-current-year
-                           term-sets-current-term)))
-    (buffer-sets-in-buffers-list term-sets-buffer-set
-                                 (find-file directory))
-    (dolist (file (directory-files directory t ".*\\.org$"))
-      (buffer-sets-in-buffers-list term-sets-buffer-set (find-file file)))))
-
 (defun term-sets-make-new-term-folder (year term)
   "Make new term folder for YEAR and TERM."
   (interactive "nYear: \nsTerm: ")
@@ -71,7 +60,8 @@
   "Create a new file for YEAR, TERM, SUBJECT, NUMBER and DESCRIPTION."
   (interactive "nYear: \nsTerm: \nsSubject: \nnNumber: \nsDescription: ")
   (let ((filename (expand-file-name
-                   (format "~/org/school/%s/%s/%s-%s.org"
+                   (format "%s/%s/%s/%s-%s.org"
+                           term-sets-base-directory
                            year
                            term
                            (downcase subject)
@@ -107,6 +97,24 @@
        (kill-buffer))))
   (buffer-sets-unload-buffer-set term-sets-buffer-set)
   (buffer-sets-load-set term-sets-buffer-set))
+
+(defun term-sets-open-files-for-term ()
+  "Open the files for the current term." 
+  (let ((directory (format "%s/%s/%s/"
+                           term-sets-base-directory
+                           term-sets-current-year
+                           term-sets-current-term)))
+    (buffer-sets-in-buffers-list term-sets-buffer-set
+                                 (find-file directory))
+    (mapc #'(lambda (file)
+              (buffer-sets-in-buffers-list term-sets-buffer-set
+                                           (find-file file)))
+          (directory-files directory t ".\\.org$"))))
+
+(defun term-sets-insinuate ()
+  "Auto-read term-set variables if necessary."
+  (when (equal term-sets-save-mechanism 'file)
+    (load term-sets-save-file t t)))
 
 (provide 'term-sets)
 
