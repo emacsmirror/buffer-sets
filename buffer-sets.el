@@ -168,8 +168,14 @@
         (dolist (buffer (symbol-value (buffer-set--generate-buffers-list set)))
           (if (buffer-live-p buffer)
               (if (null (get-buffer-window-list buffer nil t))
-                  (insert (format "    - %s\n" (buffer-name buffer)))
-                (insert (format "    - %s (visible)\n" (buffer-name buffer))))
+                  (progn
+                    (insert "    - ")
+                    (insert-text-button (buffer-name buffer) 'action (eval `(lambda (but) (switch-to-buffer ,buffer))))
+                    (insert "\n"))
+                (progn
+                  (insert "    - ")
+                  (insert-text-button (buffer-name buffer) 'action (eval `(lambda (but) (switch-to-buffer ,buffer))))
+                  (insert "    - %s (visible)\n")))
             ""))))))
 
 ;;;###autoload
