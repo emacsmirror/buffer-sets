@@ -121,7 +121,7 @@
     (mapc #'(lambda (file)
               (buffer-sets-in-buffers-list term-sets-buffer-set
                                            (find-file file)))
-          (directory-files-recursively directory t ".\\.org$"))))
+          (directory-files-recursively directory ".\\.org$" t))))
 
 (defun term-sets-insinuate ()
   "Auto-read term-set variables if necessary."
