@@ -49,23 +49,37 @@
   "The name of the buffer-set to use."
   :type 'symbol :group 'editing)
 
+(defcustom term-sets-term-path "%d/%y/%t/"
+  "Template for term paths."
+  :type 'string :group 'editing)
+
+(defcustom term-sets-course-file-name "%s-%n.org"
+  "Template for course file names"
+  :type 'string :group 'editing)
+
+(defun term-sets-get-term-directory (year term)
+  (expand-file-name
+   (format-spec term-sets-term-path
+                (format-spec-make ?d term-sets-base-directory
+                                  ?y year
+                                  ?t term))))
+
 (defun term-sets-make-new-term-folder (year term)
   "Make new term folder for YEAR and TERM."
   (interactive "nYear: \nsTerm: ")
-  (make-directory
-   (expand-file-name
-    (format "~/org/school/%s/%s/" year term))))
+  (make-directory (term-sets-get-term-directory year term)))
+
+(defun term-sets-get-course-file (year term subject number)
+  (expand-file-name (format "%s/%s"
+                            (term-sets-get-term-directory year term)
+                            (format-spec term-sets-course-file-name
+                                         (format-spec-make ?s subject
+                                                           ?n number)))))
 
 (defun term-sets-make-new-class-notes-file (year term subject number description)
   "Create a new file for YEAR, TERM, SUBJECT, NUMBER and DESCRIPTION."
   (interactive "nYear: \nsTerm: \nsSubject: \nnNumber: \nsDescription: ")
-  (let ((filename (expand-file-name
-                   (format "%s/%s/%s/%s-%s.org"
-                           term-sets-base-directory
-                           year
-                           term
-                           (downcase subject)
-                           number)))
+  (let ((filename (term-sets-get-course-file year term subject number))
         (contents (format-spec term-sets-template
                                (format-spec-make ?t description
                                                  ?d (format-time-string "<%Y-%m-%d %a %H:%M>")
@@ -100,16 +114,14 @@
 
 (defun term-sets-open-files-for-term ()
   "Open the files for the current term." 
-  (let ((directory (format "%s/%s/%s/"
-                           term-sets-base-directory
-                           term-sets-current-year
-                           term-sets-current-term)))
+  (let ((directory (term-sets-get-term-directory term-sets-current-year
+                                                 term-sets-current-term)))
     (buffer-sets-in-buffers-list term-sets-buffer-set
                                  (find-file directory))
     (mapc #'(lambda (file)
               (buffer-sets-in-buffers-list term-sets-buffer-set
                                            (find-file file)))
-          (directory-files directory t ".\\.org$"))))
+          (directory-files-recursively directory t ".\\.org$"))))
 
 (defun term-sets-insinuate ()
   "Auto-read term-set variables if necessary."
