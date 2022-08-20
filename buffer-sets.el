@@ -71,7 +71,8 @@
 
 (defun buffer-set--get-buffer-set-definition (set-name)
   (car (cl-remove-if-not (lambda (set)
-			   (eq set-name (buffer-set-name set))) *buffer-set-definitions*)))
+			   (eq set-name (buffer-set-name set)))
+                         *buffer-set-definitions*)))
 
 (defun buffer-set--generate-buffers-list (set-name)
   (intern (format "*buffer-set-%s--buffers*" set-name)))
