@@ -1,9 +1,9 @@
 ;;; buffer-sets.el --- Sets of Buffers for Buffer Management
 
-;; Copyright (C) 2016 Samuel Flint
+;; Copyright (C) 2016, 2022 Samuel W. Flint
 
 ;; Author: Samuel W. Flint <swflint@flintfam.org>
-;; Version: 2.5
+;; Version: 2.6
 ;; Package-Requires: ((cl-lib "0.5"))
 ;; Keywords: buffer-management
 ;; URL: http://github.com/swflint/buffer-sets
@@ -176,7 +176,7 @@
                 (progn
                   (insert "    - ")
                   (insert-text-button (buffer-name buffer) 'action (eval `(lambda (but) (switch-to-buffer ,buffer))))
-                  (insert "    - %s (visible)\n")))
+                  (insert " (visible)\n")))
             ""))))))
 
 ;;;###autoload
